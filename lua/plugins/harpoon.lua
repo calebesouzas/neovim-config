@@ -31,7 +31,7 @@ return {
     "Go to next file in Harpoon list")
 
     for num = 1, 9 do
-      map("n", tostring(num),
+      map("n", "<Tab>"..tostring(num),
       function() harpoon:list():select(num) end,
       tostring(num).." in Harpoon List")
     end
