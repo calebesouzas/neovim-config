@@ -18,9 +18,6 @@ vim.o.softtabstop = 2
 vim.o.expandtab = true
 vim.o.smartindent = true
 
-
-
-
 -- // Lazy Plugin Manager Config // --
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
@@ -42,6 +39,7 @@ vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
   spec = {
+    { "windwp/nvim-autopairs", event = "InsertEnter", opts = {}, },
   },
   -- install = { colorscheme = { "habamax" } },
   checker = { enabled = true },
