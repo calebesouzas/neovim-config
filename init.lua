@@ -40,7 +40,41 @@ vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
   spec = {
     { "windwp/nvim-autopairs", event = "InsertEnter", opts = {}, },
+    { "nvim-treesitter/nvim-treesitter", lazy = false, build = ":TSUpdate",
+      config = function()
+        require"nvim-treesitter.install".compilers = {"gcc", "clang"}
+        require"nvim-treesitter".setup{
+          install_dir = vim.fn.stdpath("data") .. "/site"
+        }
+      end
+    },
+    { "nvim-telescope/telescope.nvim", dependencies = {"nvim-lua/plenary.nvim"},
+      keys = {
+        {"<leader>ff", ":Telescope find_files<CR>",
+          desc = "Telescope find files"},
+        {"<leader>lg", ":Telescope live_grep<CR>",
+          desc = "Telescope live grep"},
+        {"<leader>fb", ":Telescope buffers<CR>",
+          desc = "Telescope buffers"},
+        {"<leader>fh", ":Telescope help_tags<CR>",
+          desc = "Telescope help tags"},
+        {"<leader>fg", ":Telescope git_files<CR>",
+          desc = "Telescope git files"},
+        {"<leader>fo", ":Telescope oldfiles<CR>",
+          desc = "Telescope recent files"},
+        {"<leader>ft", ":Telescope treesitter<CR>",
+          desc = "Telescope + Tree Sitter"}
+      }
+    },
+    { "ThePrimeagen/harpoon", branch = "harpoon2", dependencies = {"nvim-lua/plenary.nvim"},
+      config = function()
+        local harpoon = require "harpoon"
+        harpoon:setup()
+      end
+    },
   },
   -- install = { colorscheme = { "habamax" } },
   checker = { enabled = true },
 })
+
+
