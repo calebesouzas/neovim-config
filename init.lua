@@ -43,9 +43,9 @@ require("lazy").setup({
     { "nvim-treesitter/nvim-treesitter", lazy = false, build = ":TSUpdate",
       config = function()
         require"nvim-treesitter.install".compilers = {"gcc", "clang"}
-        require"nvim-treesitter".setup{
+        require"nvim-treesitter".setup({
           install_dir = vim.fn.stdpath("data") .. "/site"
-        }
+        })
       end
     },
     { "nvim-telescope/telescope.nvim", dependencies = {"nvim-lua/plenary.nvim"},
@@ -63,14 +63,49 @@ require("lazy").setup({
         {"<leader>fo", ":Telescope oldfiles<CR>",
           desc = "Telescope recent files"},
         {"<leader>ft", ":Telescope treesitter<CR>",
-          desc = "Telescope + Tree Sitter"}
+          desc = "Telescope + Tree Sitter"},
+        {"<leader>fk", ":Telescope keymaps<CR>",
+          desc = "Telescope keymaps"},
       }
     },
-    { "ThePrimeagen/harpoon", branch = "harpoon2", dependencies = {"nvim-lua/plenary.nvim"},
+    { "ThePrimeagen/harpoon", branch = "harpoon2",
+      dependencies = {"nvim-lua/plenary.nvim"},
       config = function()
-        local harpoon = require "harpoon"
-        harpoon:setup()
-      end
+        Harpoon = require "harpoon"
+        Harpoon:setup()
+        Harpoon:extend(require"harpoon.extensions".builtins.highlight_current_file())
+      end,
+      keys = {
+        {"<leader>a", function() Harpoon:list():add() end,
+          desc = "Add to Harpoon list"},
+        {"<leader>e", function()
+            Harpoon.ui:toggle_quick_menu(Harpoon:list())
+          end,
+          desc = "Toggle Harpoon quick menu"},
+        {"<leader><Tab>", function() Harpoon:list():next() end,
+          desc = "Next in Harpoon list"},
+        {"<leader><S-Tab>", function() Harpoon:list():prev() end,
+          desc = "Previous in Harpoon list"},
+        {"<leader>hf",
+          function()
+            local conf = require"telescope.config".values
+            local file_paths = {}
+            for _, item in ipairs(Harpoon:list().items) do
+              table.insert(file_paths, item.value)
+            end
+
+            require "telescope.pickers".new({}, {
+              prompt_title = "Harpoon Find Files",
+              finder = require"telescope.finders".new_table({
+                results = file_paths
+              }),
+              previewer = conf.file_previewer({}),
+              sorter = conf.generic_sorter({})
+            }):find()
+          end,
+          desc = "Telescope + Harpoon"},
+
+      }
     },
   },
   -- install = { colorscheme = { "habamax" } },
