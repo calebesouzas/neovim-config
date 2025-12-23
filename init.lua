@@ -18,6 +18,10 @@ vim.o.softtabstop = 2
 vim.o.expandtab = true
 vim.o.smartindent = true
 
+-- // Colors // --
+vim.o.termguicolors = true
+-- I have a custom theme called `liberty`
+
 -- // Lazy Plugin Manager Config // --
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
@@ -36,7 +40,7 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
   end
 end
 vim.opt.rtp:prepend(lazypath)
-
+-- // Plugins // --
 require("lazy").setup({
   spec = {
     { "windwp/nvim-autopairs", event = "InsertEnter", opts = {}, },
@@ -107,6 +111,15 @@ require("lazy").setup({
 
       }
     },
+    {
+      "norcalli/nvim-colorizer.lua",
+      config = function() require"colorizer".setup() end
+    },
+    {
+      dir = "~/dev/liberty.nvim",
+      name = "liberty.nvim",
+      opts = {}
+    }
   },
   -- install = { colorscheme = { "habamax" } },
   checker = { enabled = true },
