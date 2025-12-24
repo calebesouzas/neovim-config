@@ -1,3 +1,7 @@
+-- // To Do // --
+-- Setup LSPs in 'ftplugin/<filetype>.lua'
+-- Try to optimize configuration
+
 -- // Leader Mappings // --
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
