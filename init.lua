@@ -51,9 +51,7 @@ require("lazy").setup({
     { "nvim-treesitter/nvim-treesitter", lazy = false, build = ":TSUpdate",
       config = function()
         require"nvim-treesitter.install".compilers = {"gcc", "clang"}
-        require"nvim-treesitter".setup({
-          install_dir = vim.fn.stdpath("data") .. "/site"
-        })
+        require"nvim-treesitter".setup()
       end
     },
     { "nvim-telescope/telescope.nvim", dependencies = {"nvim-lua/plenary.nvim"} },
@@ -123,22 +121,31 @@ require("lazy").setup({
     --   name = "liberty.nvim",
     --   opts = {}
     -- },
+    {
+      "folke/lazydev.nvim",
+      ft = "lua", -- only load on lua files
+      opts = {
+        library = {
+        },
+      },
+    },
     {"neovim/nvim-lspconfig"},
     {
       "saghen/blink.cmp",
       dependencies = {"rafamadriz/friendly-snippets"},
       build = "cargo build --release",
       opts = {
-        keymaps = {preset = "enter"},
         appearance = {
           nerd_font_variant = "mono" -- or "normal"
         },
         -- completion = { documentation = { auto_show = false } },
-        sources = { default = {"lsp", "path", "snippets", "buffer"}},
+        sources = {
+          default = {"lsp", "path", "snippets", "buffer"},
+        },
         fuzzy = {implementation = "prefer_rust_with_warning"},
       },
       opts_extend = {"sources.default"}
-    }
+    },
   },
   -- install = { colorscheme = { "habamax" } },
   checker = { enabled = true },
