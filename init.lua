@@ -24,21 +24,21 @@ vim.o.termguicolors = true
 
 -- // Lazy Plugin Manager Config // --
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not (vim.uv or vim.loop).fs_stat(lazypath) then
-  local lazyrepo = "https://github.com/folke/lazy.nvim.git"
-  local out = vim.fn.system({
-    "git", "clone", "--filter=blob:none", "--branch=stable",
-    lazyrepo, lazypath })
-  if vim.v.shell_error ~= 0 then
-    vim.api.nvim_echo({
-      { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
-      { out, "WarningMsg" },
-      { "\nPress any key to exit..." },
-    }, true, {})
-    vim.fn.getchar()
-    os.exit(1)
-  end
-end
+-- if not (vim.uv or vim.loop).fs_stat(lazypath) then
+--   local lazyrepo = "https://github.com/folke/lazy.nvim.git"
+--   local out = vim.fn.system({
+--     "git", "clone", "--filter=blob:none", "--branch=stable",
+--     lazyrepo, lazypath })
+--   if vim.v.shell_error ~= 0 then
+--     vim.api.nvim_echo({
+--       { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
+--       { out, "WarningMsg" },
+--       { "\nPress any key to exit..." },
+--     }, true, {})
+--     vim.fn.getchar()
+--     os.exit(1)
+--   end
+-- end
 vim.opt.rtp:prepend(lazypath)
 -- // Plugins // --
 require("lazy").setup({
@@ -52,26 +52,7 @@ require("lazy").setup({
         })
       end
     },
-    { "nvim-telescope/telescope.nvim", dependencies = {"nvim-lua/plenary.nvim"},
-      keys = {
-        {"<leader>ff", ":Telescope find_files<CR>",
-          desc = "Telescope find files"},
-        {"<leader>lg", ":Telescope live_grep<CR>",
-          desc = "Telescope live grep"},
-        {"<leader>fb", ":Telescope buffers<CR>",
-          desc = "Telescope buffers"},
-        {"<leader>fh", ":Telescope help_tags<CR>",
-          desc = "Telescope help tags"},
-        {"<leader>fg", ":Telescope git_files<CR>",
-          desc = "Telescope git files"},
-        {"<leader>fo", ":Telescope oldfiles<CR>",
-          desc = "Telescope recent files"},
-        {"<leader>ft", ":Telescope treesitter<CR>",
-          desc = "Telescope + Tree Sitter"},
-        {"<leader>fk", ":Telescope keymaps<CR>",
-          desc = "Telescope keymaps"},
-      }
-    },
+    { "nvim-telescope/telescope.nvim", dependencies = {"nvim-lua/plenary.nvim"} },
     { "ThePrimeagen/harpoon", branch = "harpoon2",
       dependencies = {"nvim-lua/plenary.nvim"},
       config = function()
@@ -112,10 +93,10 @@ require("lazy").setup({
       }
     },
     --@colors
-    {
-      "norcalli/nvim-colorizer.lua",
-      config = function() require"colorizer".setup() end
-    },
+    -- {
+    --   "norcalli/nvim-colorizer.lua",
+    --   config = function() require"colorizer".setup() end
+    -- },
     {
       "folke/tokyonight.nvim",
       lazy = false,
@@ -133,14 +114,62 @@ require("lazy").setup({
         require "tokyonight".load()
       end
     },
+    -- {
+    --   dir = "~/dev/liberty.nvim",
+    --   name = "liberty.nvim",
+    --   opts = {}
+    -- },
+    {"neovim/nvim-lspconfig"},
     {
-      dir = "~/dev/liberty.nvim",
-      name = "liberty.nvim",
-      opts = {}
+      "saghen/blink.cmp",
+      dependencies = {"rafamadriz/friendly-snippets"},
+      build = "cargo build --release",
+      opts = {
+        keymaps = {preset = "enter"},
+        appearance = {
+          nerd_font_variant = "mono" -- or "normal"
+        },
+        -- completion = { documentation = { auto_show = false } },
+        sources = { default = {"lsp", "path", "snippets", "buffer"}},
+        fuzzy = {implementation = "prefer_rust_with_warning"},
+      },
+      opts_extend = {"sources.default"}
     }
   },
   -- install = { colorscheme = { "habamax" } },
   checker = { enabled = true },
 })
 
+vim.cmd("TSEnable highlight")
+
+-- // Language Servers // --
+-- Using default configurations from nvim-lspconfig
+-- overriding some with 'vim.lsp.config()'...
+-- For installation i just search what to do...
+vim.lsp.config("pyright", {
+  capabilities = require"blink.cmp".get_lsp_capabilities()
+})
+vim.lsp.enable("pyright")
+vim.lsp.config("lua_ls", {
+  settings = {
+    Lua = {
+      diagnostics = {
+        globals = {"vim"}
+      }
+    }
+  },
+  capabilities = require"blink.cmp".get_lsp_capabilities()
+})
+vim.lsp.enable("lua_ls")
+vim.lsp.config("clangd", {
+  capabilities = require"blink.cmp".get_lsp_capabilities()
+})
+vim.lsp.enable("clangd")
+vim.diagnostic.config({
+  virtual_lines = true,
+  virtual_text = false,
+  update_in_insert = false, -- or `true` to show while in insert mode
+  severity_sort = true,
+  underline = true,
+})
 
