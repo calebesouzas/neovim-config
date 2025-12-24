@@ -47,35 +47,71 @@ vim.opt.rtp:prepend(lazypath)
 -- // Plugins // --
 require("lazy").setup({
   spec = {
-    { "windwp/nvim-autopairs", event = "InsertEnter", opts = {}, },
-    { "nvim-treesitter/nvim-treesitter", lazy = false, build = ":TSUpdate",
+    {
+      "windwp/nvim-autopairs",
+      event = "InsertEnter",
+      opts = {},
+    },
+    {
+      "nvim-treesitter/nvim-treesitter",
+      lazy = false,
+      build = ":TSUpdate",
       config = function()
-        require"nvim-treesitter.install".compilers = {"gcc", "clang"}
-        require"nvim-treesitter".setup()
+        require "nvim-treesitter.install".compilers = { "gcc", "clang" }
+        require "nvim-treesitter".setup()
       end
     },
-    { "nvim-telescope/telescope.nvim", dependencies = {"nvim-lua/plenary.nvim"} },
-    { "ThePrimeagen/harpoon", branch = "harpoon2",
-      dependencies = {"nvim-lua/plenary.nvim"},
+    {
+      "nvim-telescope/telescope.nvim",
+      dependencies = { "nvim-lua/plenary.nvim" },
+      keys = {
+        { "<leader>ff", ":Telescope find_files<CR>" },
+        { "<leader>fh", ":Telescope help_tags<CR>" },
+        { "<leader>fk", ":Telescope keymaps<CR>" },
+        { "<leader>fg", ":Telescope git_files<CR>" },
+        { "<leader>fo", ":Telescope oldfiles<CR>" },
+        { "<leader>fd", ":Telescope diagnostics<CR>" },
+        { "<leader>fs", ":Telescope grep_string<CR>" },
+        { "<leader>fb", ":Telescope buffers<CR>" },
+        { "<leader>fw", ":Telescope current_buffer_fuzzy_find<CR>" }
+      }
+    },
+    {
+      "ThePrimeagen/harpoon",
+      branch = "harpoon2",
+      dependencies = { "nvim-lua/plenary.nvim" },
       config = function()
         Harpoon = require "harpoon"
         Harpoon:setup()
-        Harpoon:extend(require"harpoon.extensions".builtins.highlight_current_file())
+        Harpoon:extend(require "harpoon.extensions".builtins.highlight_current_file())
       end,
       keys = {
-        {"<leader>a", function() Harpoon:list():add() end,
-          desc = "Add to Harpoon list"},
-        {"<leader>e", function()
+        {
+          "<leader>a",
+          function() Harpoon:list():add() end,
+          desc = "Add to Harpoon list"
+        },
+        {
+          "<leader>e",
+          function()
             Harpoon.ui:toggle_quick_menu(Harpoon:list())
           end,
-          desc = "Toggle Harpoon quick menu"},
-        {"<leader><Tab>", function() Harpoon:list():next() end,
-          desc = "Next in Harpoon list"},
-        {"<leader><S-Tab>", function() Harpoon:list():prev() end,
-          desc = "Previous in Harpoon list"},
-        {"<leader>hf",
+          desc = "Toggle Harpoon quick menu"
+        },
+        {
+          "<leader><Tab>",
+          function() Harpoon:list():next() end,
+          desc = "Next in Harpoon list"
+        },
+        {
+          "<leader><S-Tab>",
+          function() Harpoon:list():prev() end,
+          desc = "Previous in Harpoon list"
+        },
+        {
+          "<leader>hf",
           function()
-            local conf = require"telescope.config".values
+            local conf = require "telescope.config".values
             local file_paths = {}
             for _, item in ipairs(Harpoon:list().items) do
               table.insert(file_paths, item.value)
@@ -83,14 +119,15 @@ require("lazy").setup({
 
             require "telescope.pickers".new({}, {
               prompt_title = "Harpoon Find Files",
-              finder = require"telescope.finders".new_table({
+              finder = require "telescope.finders".new_table({
                 results = file_paths
               }),
               previewer = conf.file_previewer({}),
               sorter = conf.generic_sorter({})
             }):find()
           end,
-          desc = "Telescope + Harpoon"},
+          desc = "Telescope + Harpoon"
+        },
 
       }
     },
@@ -129,22 +166,22 @@ require("lazy").setup({
         },
       },
     },
-    {"neovim/nvim-lspconfig"},
+    { "neovim/nvim-lspconfig" },
     {
       "saghen/blink.cmp",
-      dependencies = {"rafamadriz/friendly-snippets"},
+      dependencies = { "rafamadriz/friendly-snippets" },
       build = "cargo build --release",
       opts = {
         appearance = {
           nerd_font_variant = "mono" -- or "normal"
         },
-        -- completion = { documentation = { auto_show = false } },
+        completion = { documentation = { auto_show = true } },
         sources = {
-          default = {"lsp", "path", "snippets", "buffer"},
+          default = { "lsp", "path", "snippets", "buffer" },
         },
-        fuzzy = {implementation = "prefer_rust_with_warning"},
+        fuzzy = { implementation = "prefer_rust_with_warning" },
       },
-      opts_extend = {"sources.default"}
+      opts_extend = { "sources.default" }
     },
   },
   -- install = { colorscheme = { "habamax" } },
@@ -158,24 +195,46 @@ vim.cmd("TSEnable highlight")
 -- overriding some with 'vim.lsp.config()'...
 -- For installation i just search what to do...
 vim.lsp.config("pyright", {
-  capabilities = require"blink.cmp".get_lsp_capabilities()
+  capabilities = require "blink.cmp".get_lsp_capabilities()
 })
 vim.lsp.enable("pyright")
 vim.lsp.config("lua_ls", {
   settings = {
     Lua = {
       diagnostics = {
-        globals = {"vim"}
+        globals = { "vim" }
       }
     }
   },
-  capabilities = require"blink.cmp".get_lsp_capabilities()
+  capabilities = require "blink.cmp".get_lsp_capabilities()
 })
 vim.lsp.enable("lua_ls")
 vim.lsp.config("clangd", {
-  capabilities = require"blink.cmp".get_lsp_capabilities()
+  capabilities = require "blink.cmp".get_lsp_capabilities()
 })
 vim.lsp.enable("clangd")
+vim.api.nvim_create_autocmd("LspAttach", {
+  callback = function()
+    local map = function(key, action, opts)
+      vim.keymap.set("n", key, action, opts or {})
+    end
+    -- Navigation
+    map("gd", vim.lsp.buf.definition, { buffer = true })
+    map("gD", vim.lsp.buf.declaration, { buffer = true })
+    map("gi", vim.lsp.buf.implementation, { buffer = true })
+    map("gD", vim.lsp.buf.references, { buffer = true })
+
+    -- Documentation & Info
+    map("<C-k>", vim.lsp.buf.signature_help)
+
+    -- Refactoring & Actions
+    map("<leader>rn", vim.lsp.buf.hover)
+    map("<leader>ca", vim.lsp.buf.code_action)
+    map("<C-f>", function()
+      vim.lsp.buf.format({ async = true })
+    end)
+  end
+})
 vim.diagnostic.config({
   virtual_lines = true,
   virtual_text = false,
@@ -183,4 +242,3 @@ vim.diagnostic.config({
   severity_sort = true,
   underline = true,
 })
-
