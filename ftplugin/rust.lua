@@ -1,3 +1,5 @@
+vim.treesitter.start()
+
 local function reload_workspace(buffer_number) -- 'bufnr' deve significar 'buffer_number' ou coisa parecida...
   local clients = vim.lsp.get_clients({ bufnr = buffer_number, name = "rust_analyzer" })
   for _, client in ipairs(clients) do

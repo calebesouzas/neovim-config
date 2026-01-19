@@ -1,3 +1,5 @@
+vim.treesitter.start()
+
 vim.lsp.config("lua_ls", {
   cmd = { "lua-language-server" },
   filetypes = { "lua" },
