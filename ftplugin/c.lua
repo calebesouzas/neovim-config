@@ -1,3 +1,4 @@
+vim.treesitter.start()
 ---@brief
 ---
 --- https://clangd.llvm.org/installation.html
@@ -62,7 +63,7 @@ end
 ---@field offsetEncoding? string
 
 ---@type vim.lsp.Config
-return {
+vim.lsp.config("clangd", {
   cmd = { 'clangd' },
   filetypes = { 'c', 'cpp', 'objc', 'objcpp', 'cuda' },
   root_markers = {
@@ -96,5 +97,8 @@ return {
     vim.api.nvim_buf_create_user_command(bufnr, 'LspClangdShowSymbolInfo', function()
       symbol_info(bufnr, client)
     end, { desc = 'Show symbol info' })
+    vim.notify("C/C++ LSP Attached!", vim.log.levels.INFO)
   end,
-}
+})
+
+vim.lsp.enable("clangd")
