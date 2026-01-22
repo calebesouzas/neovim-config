@@ -1,4 +1,6 @@
 vim.treesitter.start()
+vim.g.c_syntax_for_h = 1
+
 ---@brief
 ---
 --- https://clangd.llvm.org/installation.html
@@ -13,6 +15,7 @@ vim.treesitter.start()
 ---   specified as compile_commands.json, see https://clangd.llvm.org/installation#compile_commandsjson
 
 -- https://clangd.llvm.org/extensions.html#switch-between-sourceheader
+
 local function switch_source_header(bufnr, client)
   local method_name = 'textDocument/switchSourceHeader'
   ---@diagnostic disable-next-line:param-type-mismatch
