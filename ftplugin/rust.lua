@@ -97,7 +97,7 @@ vim.lsp.config("rust_analyzer", {
   },
   settings = {
     ["rust-analyzer"] = {
-      lens = {
+      --[[lens = {
         debug = { enable = true },
         enable = true,
         implementations = { enable = true },
@@ -110,17 +110,33 @@ vim.lsp.config("rust_analyzer", {
         run = { enable = true },
         updateTest = { enable = true },
       },
+      ]]
+      lens = { enable = false, },
       checkOnSave = true,
-      check = { command = "clippy", },
-      diagnostics = { enable = true, },
+      check = { command = "check", }, -- "clippy" is stronger but slower
+      diagnostics = {
+        enable = true,
+        experimental = { enable = false },
+      },
+      hover = {
+        actions = {
+          enable = true,
+          references = { enable = false }
+        },
+      },
       imports = {
         granularity = { group = "module", },
         prefix = "self",
       },
-      cargo = {
-        buildScripts = { enable = true, },
+      completion = {
+        autoimport = { enable = false },
+        postfix = { enable = false },
       },
-      procMacro = { enable = true, },
+      cargo = {
+        buildScripts = { enable = false, },
+        loadOutDirsFromCheck = false,
+      },
+      procMacro = { enable = false, },
     },
   },
   before_init = function(init_params, config)
